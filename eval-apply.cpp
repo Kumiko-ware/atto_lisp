@@ -77,10 +77,8 @@ Cell eval(Cell expr, std::map<std::string, Cell>& env)
       return cell;
     }
     if (expr.list[0].string == "COND") {
-      if (expr.list[1].type != Type::List){
-	std::cout << "COND needs a list of clauses" << std::endl;
-      }
-      for (Cell clause: expr.list[1].list){
+      for (int i=1; i < expr.list.size(); i++) {
+	Cell clause = expr.list[i];
 	if (clause.type != Type::List) {
 	  std::cout << "Each clause must be a list" << std::endl;
 	}

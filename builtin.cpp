@@ -182,74 +182,145 @@ Cell dispatch_builtin(Cell oper, Cell args)
     return ret;
   }
   //8<-------- GREATER THAN
-  if (oper.string == "+") {
+  if (oper.string == ">") {
     Cell ret={};
-    for (auto arg: args.list){
-      switch (arg.type){
+    ret.type = Type::Integer;
+    ret.integer = 0;
+    if (args.list.size() < 2){
+      std::cout << "Too few arguments for > operator" << std::endl;
+      return ret;
+	}
+    int last = args.list.size();
+    for(int i=0; i<(last-1) ; i++) {
+      switch (args.list[i].type){
       case Type::Integer:
-	ret.integer += arg.integer;
+	switch (args.list[i+1].type) {
+	case Type::Integer:
+	  if (! (args.list[i].integer > args.list[i+1].integer))
+	    return ret;
+	  break;
+	case Type::Floating:
+	  if (! (args.list[i].integer > args.list[i+1].floating))
+	    return ret;
+	  break;
+	default:
+	  std::cout << "Invalid type for > operator" << std::endl;
+	}
 	break;
       case Type::Floating:
-	ret.floating += arg.floating;
+	switch (args.list[1].type) {
+	case Type::Integer:
+	  if (! (args.list[i].floating > args.list[i+1].integer))
+	    return ret;
+	  break;
+	case Type::Floating:
+	  if (! (args.list[i].floating > args.list[i+1].floating))
+	    return ret;
+	  break;
+	default:
+	  std::cout << "Invalid type for > operator" << std::endl;
+	}
 	break;
       default:
-	std::cout << "Invalid type for + operator" << std::endl;
+	std::cout << "Invalid type for > operator" << std::endl;
       }
     }
-    if (ret.floating != 0) {
-      ret.type = Type::Floating;
-      ret.floating += ret.integer;
-      return ret;
-    } else {
-      ret.type = Type::Integer;
-      return ret;
-    }
+    ret.integer = 1;
+    return ret;
   }
-  if (oper.string == "+") {
+  //8<-------- LESS THAN
+  if (oper.string == "<") {
     Cell ret={};
-    for (auto arg: args.list){
-      switch (arg.type){
+    ret.type = Type::Integer;
+    ret.integer = 0;
+    if (args.list.size() < 2){
+      std::cout << "Too few arguments for < operator" << std::endl;
+      return ret;
+	}
+    int last = args.list.size();
+    for(int i=0; i<(last-1) ; i++) {
+      switch (args.list[i].type){
       case Type::Integer:
-	ret.integer += arg.integer;
+	switch (args.list[i+1].type) {
+	case Type::Integer:
+	  if (! (args.list[i].integer < args.list[i+1].integer))
+	    return ret;
+	  break;
+	case Type::Floating:
+	  if (! (args.list[i].integer < args.list[i+1].floating))
+	    return ret;
+	  break;
+	default:
+	  std::cout << "Invalid type for < operator" << std::endl;
+	}
 	break;
       case Type::Floating:
-	ret.floating += arg.floating;
+	switch (args.list[1].type) {
+	case Type::Integer:
+	  if (! (args.list[i].floating < args.list[i+1].integer))
+	    return ret;
+	  break;
+	case Type::Floating:
+	  if (! (args.list[i].floating < args.list[i+1].floating))
+	    return ret;
+	  break;
+	default:
+	  std::cout << "Invalid type for < operator" << std::endl;
+	}
 	break;
       default:
-	std::cout << "Invalid type for + operator" << std::endl;
+	std::cout << "Invalid type for < operator" << std::endl;
       }
     }
-    if (ret.floating != 0) {
-      ret.type = Type::Floating;
-      ret.floating += ret.integer;
-      return ret;
-    } else {
-      ret.type = Type::Integer;
-      return ret;
-    }
+    ret.integer = 1;
+    return ret;
   }
-  if (oper.string == "+") {
+  //8<-------- EQUAL
+  if (oper.string == "=") {
     Cell ret={};
-    for (auto arg: args.list){
-      switch (arg.type){
+    ret.type = Type::Integer;
+    ret.integer = 0;
+    if (args.list.size() < 2){
+      std::cout << "Too few arguments for = operator" << std::endl;
+      return ret;
+	}
+    int last = args.list.size();
+    for(int i=0; i<(last-1) ; i++) {
+      switch (args.list[i].type){
       case Type::Integer:
-	ret.integer += arg.integer;
+	switch (args.list[i+1].type) {
+	case Type::Integer:
+	  if (! (args.list[i].integer == args.list[i+1].integer))
+	    return ret;
+	  break;
+	case Type::Floating:
+	  if (! (args.list[i].integer == args.list[i+1].floating))
+	    return ret;
+	  break;
+	default:
+	  std::cout << "Invalid type for = operator" << std::endl;
+	}
 	break;
       case Type::Floating:
-	ret.floating += arg.floating;
+	switch (args.list[1].type) {
+	case Type::Integer:
+	  if (! (args.list[i].floating == args.list[i+1].integer))
+	    return ret;
+	  break;
+	case Type::Floating:
+	  if (! (args.list[i].floating == args.list[i+1].floating))
+	    return ret;
+	  break;
+	default:
+	  std::cout << "Invalid type for = operator" << std::endl;
+	}
 	break;
       default:
-	std::cout << "Invalid type for + operator" << std::endl;
+	std::cout << "Invalid type for = operator" << std::endl;
       }
     }
-    if (ret.floating != 0) {
-      ret.type = Type::Floating;
-      ret.floating += ret.integer;
-      return ret;
-    } else {
-      ret.type = Type::Integer;
-      return ret;
-    }
+    ret.integer = 1;
+    return ret;
   }
 }
 //--------8<--------8<--------8<--------8<--------8<--------8<--------8<--------
