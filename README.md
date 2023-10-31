@@ -4,7 +4,9 @@ A very small lisp
 # Usage:
 
 clone...
+
 ./make.sh
+
 ./lispy
 
 happy hacking!
