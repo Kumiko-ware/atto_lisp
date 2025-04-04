@@ -1,123 +1,164 @@
-;; This buffer is for text that is not saved, and for Lisp evaluation.
-;; To create a file, visit it with C-x C-f and enter text in its buffer.
+#include <string.h>
+#include "memory.h"
 
-;;;;SCHEME SYNTAX FROM SECTION 4.1.2 OF STRUCTURE AND INTERPRETATION OF
-;;;  COMPUTER PROGRAMS, TO SUPPORT CHAPTER 5
-;;;;Loaded by compiler.scm (for use by compiler), and by eceval-support.scm
-;;;; (for simulation of eceval machine operations)
+int is_self_evaluating(cell exp)
+{
+  if (is_number(exp)) return 1;
+  if (is_string(exp)) return 1;
+  return 0;
+}
 
-(define (self-evaluating? exp)
-  (cond ((number? exp) true)
-        ((string? exp) true)
-        (else false)))
+int is_tagged_list(cell exp, char const *tag)
+{
+  return (is_pair(exp) &&
+	  is_symbol(car(exp)) &&
+	  !strcmp(cell2symbol(car(exp)), tag));
+}
 
+int is_quoted(cell exp)
+{
+  return is_tagged_list(exp, "QUOTE");
+}
 
-(define (quoted? exp)
-  (tagged-list? exp 'quote))
+char *text_of_quotation(cell exp)
+{
+  cell2string(cadr(exp));
+}
 
-(define (text-of-quotation exp) (cadr exp))
+int is_variable(cell exp)
+{
+  return is_symbol(exp);
+}
 
-(define (tagged-list? exp tag)
-  (if (pair? exp)
-      (eq? (car exp) tag)
-      false))
+int is_assignment(cell exp)
+{
+  return is_tagged_list(exp, "SET!");
+}
 
+char *assignment_variable(cell exp)
+{
+  return cell2string(cadr(exp));
+}
 
-(define (variable? exp) (symbol? exp))
+cell assignment_value(cell exp)
+{
+  return caddr(exp);
+}
 
-(define (assignment? exp)
-  (tagged-list? exp 'set!))
+int is_definition(cell exp)
+{
+  return is_tagged_list(exp, "DEFINE");
+}
 
-(define (assignment-variable exp) (cadr exp))
-
-(define (assignment-value exp) (caddr exp))
-
-
-(define (definition? exp)
-  (tagged-list? exp 'define))
-
-(define (definition-variable exp)
-  (if (symbol? (cadr exp))
-      (cadr exp)
-      (caadr exp)))
-
-(define (definition-value exp)
-  (if (symbol? (cadr exp))
-      (caddr exp)
-      (make-lambda (cdadr exp)
-                   (cddr exp))))
-
-(define (lambda? exp) (tagged-list? exp 'lambda))
-
-(define (lambda-parameters exp) (cadr exp))
-(define (lambda-body exp) (cddr exp))
-
-(define (make-lambda parameters body)
-  (cons 'lambda (cons parameters body)))
-
-(define (if? exp) (tagged-list? exp 'if))
-
-(define (if-predicate exp) (cadr exp))
-
-(define (if-consequent exp) (caddr exp))
-
-(define (if-alternative exp)
-  (if (not (null? (cdddr exp)))
-      (cadddr exp)
-      'false))
+char *definition_variable(cell exp)
+{
+  if (is_symbol(cadr(exp)))
+    return cell2symbol(cadr(exp)); // variable
+  else
+    return cell2symbol(caadr(exp)); // lambda
+}
 
 
-(define (begin? exp) (tagged-list? exp 'begin))
-(define (begin-actions exp) (cdr exp))
+cell make_lambda(cell parameters, cell body)
+{
+  return cons(string2cell("LAMBDA"),
+	      cons(parameters, body));
+}
 
-(define (last-exp? seq) (null? (cdr seq)))
-(define (first-exp seq) (car seq))
-(define (rest-exps seq) (cdr seq))
+cell definition_value(cell exp)
+{
+  if (is_symbol(cadr(exp)))
+    return caddr(exp);
+  else
+    return make_lambda(cdadr(exp), cddr(exp));
+}
 
-(define (application? exp) (pair? exp))
-(define (operator exp) (car exp))
-(define (operands exp) (cdr exp))
+int is_lambda(cell exp)
+{
+  return is_tagged_list(exp, "LAMBDA");
+}
 
-(define (no-operands? ops) (null? ops))
-(define (first-operand ops) (car ops))
-(define (rest-operands ops) (cdr ops))
+cell lambda_parameters(cell exp)
+{
+  return cadr(exp);
+}
 
-;;;**following needed only to implement COND as derived expression,
-;;; not needed by eceval machine in text.  But used by compiler
+cell lambda_body(cell exp)
+{
+  return cddr(exp);
+}
 
-;; from 4.1.2
-(define (make-if predicate consequent alternative)
-  (list 'if predicate consequent alternative))
+int is_if(cell exp)
+{
+  is_tagged_list(exp, "IF");
+}
 
+cell if_predicate(cell exp)
+{
+  return cadr(exp);
+}
 
-(define (sequence->exp seq)
-  (cond ((null? seq) seq)
-        ((last-exp? seq) (first-exp seq))
-        (else (make-begin seq))))
+cell if_consequent(cell exp)
+{
+  return caddr(exp);
+}
 
-(define (make-begin seq) (cons 'begin seq))
+cell if_alternative(cell exp)
+{
+  return cdddr(exp);
+}
 
-(define (cond? exp) (tagged-list? exp 'cond))
-(define (cond-clauses exp) (cdr exp))
-(define (cond-else-clause? clause)
-  (eq? (cond-predicate clause) 'else))
-(define (cond-predicate clause) (car clause))
-(define (cond-actions clause) (cdr clause))
+int is_begin(cell exp)
+{
+  return is_tagged_list(exp, "BEGIN");
+}
 
-(define (cond->if exp)
-  (expand-clauses (cond-clauses exp)))
+cell begin_actions(cell exp)
+{
+  return cdr(exp);
+}
 
-(define (expand-clauses clauses)
-  (if (null? clauses)
-      'false                          ; no else clause
-      (let ((first (car clauses))
-            (rest (cdr clauses)))
-        (if (cond-else-clause? first)
-            (if (null? rest)
-                (sequence->exp (cond-actions first))
-                (error "ELSE clause isn't last -- COND->IF"
-                       clauses))
-            (make-if (cond-predicate first)
-                     (sequence->exp (cond-actions first))
-                     (expand-clauses rest))))))
-;; end of Cond support
+int is_last_exp(cell seq)
+{
+  return is_null(cdr(seq));
+}
+
+cell first_exp(cell seq)
+{
+  return car(seq);
+}
+
+cell rest_exps(cell seq)
+{
+  return cdr(seq);
+}
+
+int is_application(cell exp)
+{
+  return is_pair(exp);
+}
+
+cell operator(cell exp)
+{
+  return car(exp);
+}
+
+cell operands(cell exp)
+{
+  return cdr(exp);
+}
+
+int no_operands(cell ops)
+{
+  return is_null(ops);
+}
+
+cell first_operand(cell ops)
+{
+  return car(ops);
+}
+
+cell rest_operands(cell ops)
+{
+  return cdr(ops);
+}
