@@ -1,18 +1,17 @@
 #include <string.h>
 #include "memory.h"
+#include "syntax.h"
+
+/*
+  This is based on the file
+  https://github.com/ivanjovanovic/sicp/blob/master/5.4/ch5-syntax.scm
+*/
 
 int is_self_evaluating(cell exp)
 {
   if (is_number(exp)) return 1;
   if (is_string(exp)) return 1;
   return 0;
-}
-
-int is_tagged_list(cell exp, char const *tag)
-{
-  return (is_pair(exp) &&
-	  is_symbol(car(exp)) &&
-	  !strcmp(cell2symbol(car(exp)), tag));
 }
 
 int is_quoted(cell exp)
@@ -23,6 +22,13 @@ int is_quoted(cell exp)
 char *text_of_quotation(cell exp)
 {
   cell2string(cadr(exp));
+}
+
+int is_tagged_list(cell exp, char const *tag)
+{
+  return (is_pair(exp) &&
+	  is_symbol(car(exp)) &&
+	  !strcmp(cell2symbol(car(exp)), tag));
 }
 
 int is_variable(cell exp)
@@ -58,13 +64,6 @@ char *definition_variable(cell exp)
     return cell2symbol(caadr(exp)); // lambda
 }
 
-
-cell make_lambda(cell parameters, cell body)
-{
-  return cons(string2cell("LAMBDA"),
-	      cons(parameters, body));
-}
-
 cell definition_value(cell exp)
 {
   if (is_symbol(cadr(exp)))
@@ -86,6 +85,12 @@ cell lambda_parameters(cell exp)
 cell lambda_body(cell exp)
 {
   return cddr(exp);
+}
+
+cell make_lambda(cell parameters, cell body)
+{
+  return cons(string2cell("LAMBDA"),
+	      cons(parameters, body));
 }
 
 int is_if(cell exp)
