@@ -1,7 +1,16 @@
 #ifndef MEMORY_H_INCLUDED
 #define MEMORY_H_INCLUDED
 
-typedef void* cell;
+#define TAG_NUMBER 0
+#define TAG_STRING 1
+#define TAG_SYMBOL 2
+
+typedef struct{
+  void *car;
+  void *cdr;
+}cell_st;
+
+typedef cell_st* cell;
 
 cell cons(cell first, cell second);
 cell car(cell pair);
@@ -26,10 +35,10 @@ int is_pair(cell value);
 int is_number(cell value);
 int is_string(cell value);
 int is_symbol(cell value);
-cell *number2cell(int value);
-cell *string2cell(char *value);
-cell *symbol2cell(char *value);
-int cell2number(cell value);
+cell number2cell(long int value);
+cell string2cell(char *value);
+cell symbol2cell(char *value);
+long int cell2number(cell value);
 char *cell2string(cell value);
 char *cell2symbol(cell value);
 
