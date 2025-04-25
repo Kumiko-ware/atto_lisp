@@ -17,7 +17,7 @@ enum TOKENS {
   TOK_QQT, // Quasiquote
   TOK_UNQ, // Unquote
   TOK_UQS, // Unquote slicing
-  TOK_PNT, // Point (for pair notation)
+  TOK_DOT, // Dot (for pair notation)
   TOK_INT, // Integer
   TOK_STR, // String
   TOK_SYM}; // Symbol
@@ -26,7 +26,7 @@ enum READ_VAL {
   READ_EXP,
   READ_ERR_EOF,
   READ_ERR_CLS,
-  READ_ERR_PNT,
+  READ_ERR_DOT,
   READ_ERR_QUO,
   READ_BAD_LST
 };

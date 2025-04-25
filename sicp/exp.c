@@ -111,7 +111,7 @@ cell if_consequent(cell exp)
 
 cell if_alternative(cell exp)
 {
-  return cdddr(exp);
+  return caddr(cdr(exp));
 }
 
 /* Optional cond->if
@@ -194,3 +194,62 @@ cell rest_operands(cell ops)
 {
   return cdr(ops);
 }
+
+// From Ch. 4.1.3 - Operations on environments
+
+cell make_procedure(cell parameters, cell body, cell env)
+{
+  // TODO: We should list()
+  return cons(make_symbol("PROCEDURE"),
+	       cons(parameters,
+		    cons(body,
+			 cons(env, EMPTY_LIST))));
+}
+
+cell is_compound_procedure(cell p)
+{
+  return is_tagged_list(p, "PROCEDURE");
+}
+
+cell procedure_parameters(cell p)
+{
+  return cadr(p);
+}
+
+cell procedure_body(cell p)
+{
+  return caddr(p);
+}
+
+cell procedure_environment(cell p)
+{
+  return caddr(cdr(p));
+}
+
+cell is_true(cell value)
+{
+  if (is_number(value) && integer(value) != 0)
+    return T_SYMBOL;
+  if (is_string(value) && !eq_str(value,make_string("")))
+    return T_SYMBOL;
+  return EMPTY_LIST;
+}
+
+// From Ch. 4.1.4 - Runing the evaluator as a command
+
+cell is_primitive_procedure(cell proc)
+{
+  return is_tagged_list(proc, "PRIMITIVE");
+}
+
+cell primitive_implementation(cell proc)
+{
+  return cadr(proc);
+}
+
+// From Ch. 5.4.1 - Footnote
+cell is_last_operand(cell ops)
+{
+  return is_null(cdr(ops));
+}
+

@@ -59,8 +59,8 @@ cell lookup_variable_value(cell var, cell env)
   }
   cell frame = first_frame(env);
   for (cell vars = frame_variables(frame), vals = frame_values(frame);
-       vars = cdr(vars), vals = cdr(vals);
-       vars != EMPTY_LIST){
+       vars != EMPTY_LIST;
+       vars = cdr(vars), vals = cdr(vals)){
     if (eq_str(var, car(vars))) {
       return car(vals);
     }
@@ -81,8 +81,8 @@ cell set_variable_value(cell var, cell val, cell env)
   }
   cell frame = first_frame(env);
   for (cell vars = frame_variables(frame), vals = frame_values(frame);
-       vars = cdr(vars), vals = cdr(vals);
-       vars != EMPTY_LIST){
+       vars != EMPTY_LIST;
+       vars = cdr(vars), vals = cdr(vals)){
     if (eq_str(var, car(vars))) {
       set_car(vals, val);
       return var;
@@ -96,8 +96,8 @@ cell define_variable(cell var, cell val, cell env)
 {
   cell frame = first_frame(env);
   for (cell vars = frame_variables(frame), vals = frame_values(frame);
-       vars = cdr(vars), vals = cdr(vals);
-       vars != EMPTY_LIST){
+       vars != EMPTY_LIST;
+       vars = cdr(vars), vals = cdr(vals)){
     if (eq_str(var, car(vars))) {
       set_car(vals, val);
       return var;

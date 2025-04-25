@@ -14,5 +14,6 @@ cell add_binding_to_frame(cell var, cell val, cell frame);
 cell extend_environment(cell vars, cell vals, cell base_env);
 cell lookup_variable_value(cell var, cell env);
 cell set_variable_value(cell var, cell val, cell env);
+cell define_variable(cell var, cell val, cell env);
 
 #endif //ENV_H_INCLUDED

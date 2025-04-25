@@ -89,7 +89,7 @@ int get_token(value *val, char const *str)
   }
   if ((str[pos] == '.') && is_sep(str[pos+1])){
     ++pos;
-    return TOK_PNT;
+    return TOK_DOT;
   }
   if (str[pos] == '"'){
     while(1){
@@ -117,15 +117,13 @@ int get_token(value *val, char const *str)
   // etc.
   //
   // Right now we stick to decimal integers
-  if (char_in(str[pos], "+-0123456789")){
+  if (char_in(str[pos], "+-"))
     ++pos;
-    if (is_digit(str[pos])){
-      while(is_digit(str[pos]))
-	++pos;
-      if (is_sep(str[pos]) || is_eos(str[pos])){
-	val->int_value = strtol(str + start_pos, NULL, 10);
-	return TOK_INT;
-      }
+  while(is_digit(str[pos])){
+    ++pos;
+    if (is_sep(str[pos]) || is_eos(str[pos])){
+      val->int_value = strtol(str + start_pos, NULL, 10);
+      return TOK_INT;
     }
   }
   while(!is_sep(str[pos]) && !is_eos(str[pos]))
@@ -154,7 +152,7 @@ int read(cell *exp, const char* str)
       *exp = EMPTY_LIST;
       return READ_EXP;
     }
-    if (ret == READ_ERR_PNT){
+    if (ret == READ_ERR_DOT){
       *exp = EMPTY_LIST;
       return READ_BAD_LST;
     }
@@ -170,7 +168,7 @@ int read(cell *exp, const char* str)
       }
     if (ret == READ_ERR_CLS)
       return READ_EXP;
-    if (ret == READ_ERR_PNT){
+    if (ret == READ_ERR_DOT){
       ret = read(&second, str);
       if (ret == READ_EXP){
 	set_cdr(last, second);
@@ -178,7 +176,7 @@ int read(cell *exp, const char* str)
       }
     }
     *exp = EMPTY_LIST;
-    return READ_ERR_PNT;
+    return READ_ERR_DOT;
     break;
   case TOK_CLS:
     return READ_ERR_CLS;
@@ -219,8 +217,8 @@ int read(cell *exp, const char* str)
     }
     return READ_ERR_QUO;
     break;
-  case TOK_PNT:
-    return READ_ERR_PNT;
+  case TOK_DOT:
+    return READ_ERR_DOT;
     break;
   case TOK_INT:
     *exp = make_number(val.int_value);

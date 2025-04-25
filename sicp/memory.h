@@ -3,12 +3,12 @@
 
 #include <stddef.h>
 
-typedef struct{
-  void *car;
-  void *cdr;
+typedef struct cell_st{
+  struct cell_st* car;
+  struct cell_st* cdr;
 }cell_st;
 
-typedef cell_st* cell;
+typedef struct cell_st* cell;
 
 #define TAG_NUMBER 0
 #define TAG_STRING 1

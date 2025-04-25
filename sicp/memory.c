@@ -6,7 +6,7 @@
 
 // NOTE: the defition of t_symbol_st must comply with make_symbol
 // function below!
-cell_st t_symbol_st={(void*) (TAG_SYMBOL << 1 | 1),
+struct cell_st t_symbol_st={(void*) (TAG_SYMBOL << 1 | 1),
 		     (void*) "T"};
 const cell T_SYMBOL = &t_symbol_st;
 
@@ -171,7 +171,7 @@ cell length(cell list)
   int length = 0;
   if (! is_pair(list))
     return make_number(length);
-  for (cell elm = list; elm = elm->cdr ; elm && is_pair(elm) ){
+  for (cell elm = list; elm = elm->cdr ; is_pair(elm) ){
     ++length;
   }
   return make_number(length);
@@ -226,20 +226,20 @@ cell is_symbol(cell value)
 
 cell make_number(long int value)
 {
-  return cons((void*) (TAG_NUMBER << 1 | 1),
-	      (void*) value);
+  return cons((cell) (TAG_NUMBER << 1 | 1),
+	      (cell) value);
 }
 
 cell make_string(char const *value)
 {
-  return cons((void*) (TAG_STRING << 1 | 1),
-	      (void*) value);
+  return cons((cell) (TAG_STRING << 1 | 1),
+	      (cell) value);
 }
 
 cell make_symbol(char const *value)
 {
-  return cons((void*) (TAG_SYMBOL << 1 | 1),
-	      (void*) value);
+  return cons((cell) (TAG_SYMBOL << 1 | 1),
+	      (cell) value);
 }
 
 long int integer(cell value)
